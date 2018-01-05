@@ -1,0 +1,334 @@
+<html>
+<head>
+<title>Computer Vision Project</title>
+<link href='http://fonts.googleapis.com/css?family=Nunito:300|Crimson+Text|Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" title="Default" href="styles/github.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>  
+
+<link rel="stylesheet" href="highlighting/styles/default.css">
+<script src="highlighting/highlight.pack.js"></script>
+
+<style type="text/css">
+body {
+	margin: 0px;
+	width: 100%;
+	font-family: 'Crimson Text', serif;
+	font-size: 20px;
+	background: #fcfcfc;
+}
+h1 {
+	font-family: 'courier';
+	font-weight: normal;
+	font-size: 28px;
+	margin: 25px 0px 0px 0px;
+
+}
+
+h2 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 32px;
+	margin: 15px 0px 35px 0px;
+	color: #333;	
+	word-spacing: 3px;
+}
+
+h3 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 26px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+h4 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 22px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+
+h5 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 18px;
+	margin: 10px 0px 10px 0px;
+	color: #111;
+	word-spacing: 2px;
+}
+
+p, li {
+	color: #444;
+}
+
+a {
+	color: #DE3737;
+}
+
+.container {
+	margin: 0px auto 0px auto;
+	width: 960px;
+}
+
+#header {
+	background: #333;
+	width: 100%;
+}
+
+#headersub {
+	color: #ccc;
+	width: 960px;
+	margin: 0px auto 0px auto;
+	padding: 20px 0px 20px 0px;
+}
+
+.chart {
+	width: 480px;
+}
+.lol {
+	font-size: 16px;
+	color: #888;
+	font-style: italic;
+}
+.sep {
+	height: 1px;
+	width: 100%;
+	background: #999;
+	margin: 20px 0px 20px 0px;
+}
+.footer{
+	font-size: 16px;
+}
+.latex {
+	width: 100%;
+}
+
+.latex img {
+	display: block;
+	margin: 0px auto 0px auto;
+}
+
+pre {
+	font-family: 'Droid Sans Mono';
+	font-size: 14px;
+}
+
+td img {
+  vertical-align: middle;
+}
+
+#contents a {
+}
+</style>
+<script type="text/javascript">
+    hljs.initHighlightingOnLoad();
+</script>
+</head>
+<body>
+<div id="header" >
+<div id="headersub">
+<h1><span style="color: #DE3737">Aditya Sahai</span></h1>
+</div>
+</div>
+<div class="container">
+
+<h2>Project 1: Image Filtering and Hybrid Images</h2>
+
+<div style="float: right; padding: 20px">
+<img src="hj/hybrid_image.jpg" height=250/>
+<p style="font-size: 14px" ><strong>Hybrid image of Heath Ledger and his ledgenary Joker.</strong></p>
+</div>
+
+<p> The first project in CS 6476 is about Hybrid images. Hybrid images are created by adding (literally just summing up two images matrices, given that they are they same dimensions. Look to your right) two images, one of which has gone through a low-pass filter and one of which has gone through a high-pass filter.</p>
+<h4>What does an image filter do?</h4>
+<p> An image filter changes the appearance of an image by modifying values in the image matrix. Simple as that. In this project we use a low-pass filter which basically removes higher frequencies from images. The low-pass filters being used for this project have been created using a function called 'fspecial' in Matlab. This function creates a low-pass filter which mimics a Gaussian distribution given by the following formula, </p>
+<img src="gf.png" height=125/>
+
+<figure>
+<img src="sp.png" height=250 title="Surface Plot of a Gaussian Low-pass filter"/>
+<img src="sp2.png" height=250 title="Surface Plot 2 of a Gaussian Low-pass filter"/>
+<figcaption style="font-size: 12px;color: green;text-align: left;">Fig: Surface Plots of a Gaussian Low-pass filter (sigma = 5, matrix size = 21x21)</figcaption>
+</figure>
+
+<p> As the image above illustrates, the Gaussian distribution decreases slowy from high intensity in the middle to lower intesities on the sides. When applied to an image, it blurs out the image, but slowly so that there are no hard edges to be seen. For example, look at the following natural and blurred images of the same image,</p>
+<figure>
+<img src="hj/joker.jpeg" height=250 title="Joker"/>
+<img src="hj/low_frequencies.jpg" height=250 title="Joker blurred"/>
+<figcaption style="font-size: 12px;color: green;text-align: left;">Fig: Natural Image vs Image after Gaussian low-pass filter application</figcaption>
+</figure>
+
+<h4>How do Hybrid Images work? </h4>
+<p> As per the <a href="https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0ahUKEwjAqZK12IvWAhVBQiYKHXB7BM4QFggoMAA&url=http%3A%2F%2Fcvcl.mit.edu%2Fpublications%2FOlivaTorralb_Hybrid_Siggraph06.pdf&usg=AFQjCNFZtEJ-m8_D7TNJs3_QTE7SZ2GYqw">paper</a> at SIGGRAPH, a hybrid image combines the low-spatial frequencies of one image with the high spacial frequencies of another. This technique produces images which have two different interpertations subject to the viewing distance. Quoting the paper below,
+</p>
+<p style="width: 800px;font-family: courier;margin-left: 80px;">"Hybrid images are based on the multiscale processing ofimages by the human visual system and are motivated by masking studies in visual perception. These images can be used to create compelling displays in which the image appears to change as the viewing distance changes."</p>
+
+<h4>Methodology used in this project</h4>
+<p>In this project we have setup the consturction of the Gaussian filter as follows,</p>
+
+<pre><code>
+cutoff_frequency = 5; 
+
+filter = fspecial('Gaussian', cutoff_frequency*4+1, cutoff_frequency);
+</code></pre>
+<p>This filter behaves differently for different pairs of images as we vary the value of the cut off frequency variable. Since, changing the value of the cutoff frequency not only changes the value of the sigma (standard deviation) of the fspecial function, it also increases the size of the filter matrix. Therefore, surface plot for even higher values looks pretty similar to the one showed above. The size of the filter matrix and sigma does, however, interact differntly with different images as we shall see below. This is because, larger filters have more of an effect on the images. A larger matrix will infer the value of each position in the image matrix from a larger neighbourhood and will have more of an effect. For instance, a larger Gaussian filter will blur out the image more than a smaller Gausian filter. Please see example below.</p>
+<figure>
+<img src="bird_blur1.jpg" height=250 title="Blurred bird with cut off frequency of 3"/>
+<img src="bird_blur2.jpg" height=250 title="Blurred bird with cut off frequency of 9"/>
+<figcaption style="font-size: 12px;color: green;text-align: left;">Fig: Bird image blurred with different values of cut off frequency 3(left) and 9(right)</figcaption>
+</figure>
+
+
+<h4>How were these images made?</h4>
+<p>So, as the name suggests, hybrid images are made by combining two images. One of these images is generated by applying the low-pass filter as shown in the Joker image above. The other is obtained by substracting the low-pass image from the actual image to obtain a high-pass image, as follows,</p>
+
+<pre><code>
+high_frequencies = image2 - my_imfilter(image2, filter);
+</code></pre>
+<table>
+	<tr>
+		<td>
+<img src="hj/heath.jpg" width="24%"/> <b style="font-size: 40px;">-</b> <img src="hj/blurred_heath.jpg" width="24%"/> <b style="font-size: 40px;"> = </b> <img src="hj/high_frequencies.jpg" width="24%"/>
+		</td>
+	</tr>
+</table>
+<p> After we have both the high-frequency image and the low-frequency image, the hybrid image is just a sum of these two images,</p>
+<pre><code>
+hybrid_image = high_frequencies + low_frequencies;
+</code></pre>
+<table>
+	<tr>
+		<td>
+<img src="hj/high_frequencies.jpg" width="24%"/> <b style="font-size: 40px;">+</b> <img src="hj/low_frequencies.jpg" width="24%"/> <b style="font-size: 40px;"> = </b> <img src="hj/hybrid_image.jpg" width="24%"/>
+		</td>
+	</tr>
+</table>
+<br>
+<h4>Optimizations to the <a style="font-family: courier;">my_imfilter()</a></h4>
+<strong>First Version of <a style="font-family: courier;">my_imfilter()</a></strong>
+<p>My first iteration of the my_imfilter had no optimizations. The running time was propotional to the dimensions of the image (height x width x channels) multiplied by the dimensions of the filter (height x width). The filter was applied by first padding the image with zeros in accordance with the size of the filter and then running a 3 level loop (one each for the three dimensions of the image) to obtain the sum of the dot product of a filter-sized segment of the image and the filter. </p>
+<br>
+<strong>Second Version of <a style="font-family: courier;">my_imfilter()</a></strong>
+<p>After doing some research, I read about seprable filtering in this two part article (<a href="https://blogs.mathworks.com/steve/2006/10/04/separable-convolution/">Part 1</a> and <a href="http://blogs.mathworks.com/steve/2006/11/28/separable-convolution-part-2/"> Part 2</a>). This article explains that if the rank of any matrix is 1, then it can be split into a product of two vectors. The decomposition of the matrix can be done as follows,</p>
+<pre><code>
+	% suppose filter is the Gaussian Filter
+    >> disp(rank(filter))
+     1
+    >> [U,S,V] = svd(filter);
+    >> v = U(:, 1) * sqrt(S(1,1));
+    >> h = V(:, 1)' * sqrt(S(1,1));
+    % v and h are the two vertical and horizontal vectors respectively.
+</code></pre>
+<p>The <b style="font-family: courier;">svd()</b> function here is <a href="https://en.wikipedia.org/wiki/Singular_value_decomposition"> Single Value Decomposition </a> function. The output of the function is such that, if </p>
+	<p><b style="font-family: courier;">[U,S,V] = svd(X)</b> then,</p>
+	<p><b style="font-family: courier;">X = U*S*V'</b></p>
+<p> Convolution (Correlation) is linear and associative, therefore </p>
+<b style="font-family: courier;">F*(A*B) = (F*A)*B</b>
+<p> This fact gives us a computational advantage. Instead of multipling the image with a <i style="font-family:courier;">H(height) x W(width)</i> matrix of the filter, we can now multiply it with two vectors, each of <i style="font-family:courier;">Hx1</i> and <i style="font-family:courier;">Wx1</i> dimensions. Therefore, the running time is now propotional to only <i style="font-family:courier;">(height x width x channels)x(H + W)</i>.</p>
+<strong>Improvement in the running time</strong>
+<pre><code>
+disp(size(image1));
+	750 1000 3
+disp(size(filter1));
+	57 57
+tic;
+my_imfilter_v1(image1, filter1);
+toc;
+	Elapsed time is 180.067777 seconds
+tic;
+my_imfilter_v2(image1, filter1);
+toc;
+	Elapsed time is 110.475859 seconds
+</code></pre>
+
+<br>
+<br>
+<h2>Lets look at the results of this project</h2>
+<h3>Heath/Joker</h3>
+<table>
+<tr>
+<td>
+<img src="hj/hybrid_image_scales.jpg" width="99%"/>
+</td>
+</tr>
+
+</table>
+
+<div style="clear:both" >
+<p>For this image, I actually used two different cutoff frequencies for each image. For the Heath Ledger image, the frequency used was - <b>9</b> and for the joker image the frequency used was -<b>14</b>. I felt that it was difficult to find a single cutoff frequency which worked with both images.</p>
+</div>
+
+
+
+<h3>Fish/Submarine</h3>
+
+<table>
+
+<tr>
+<td>
+<img src="fs/fish.bmp" width="24%"/>
+<img src="fs/submarine.bmp"  width="24%"/>
+<img src="fs/high_frequencies.jpg" width="24%"/>
+<img src="fs/low_frequencies.jpg" width="24%"/>
+</td>
+</tr>
+<tr>
+<td>
+<img src="fs/hybrid_image_scales.jpg" width="99%"/>
+</td>
+</tr>
+
+</table>
+<div style="clear:both" >
+<p>The cutoff frequency used for this pair was - <b>3</b>. For this I had to reduce the cutoff frequency because for higher values the submarine was blurred too much because of which they were not visible even at reseanoable distances. I found the right tradeoff at 3, although the color of the fish changed, which should be expected because colors reside at lower frequences.</p>
+</div>
+
+<h3>Marylin/Einstein</h3>
+
+<table>
+
+<tr>
+<td>
+<img src="me/einstein.bmp" width="24%"/>
+<img src="me/marilyn.bmp"  width="24%"/>
+<img src="me/high_frequencies.jpg" width="24%"/>
+<img src="me/low_frequencies.jpg" width="24%"/>
+</td>
+</tr>
+<tr>
+<td>
+<img src="me/hybrid_image_scales.jpg" width="99%"/>
+</td>
+</tr>
+
+</table>
+<div style="clear:both" >
+<p>The cutoff frequency used for this pair was - <b>4</b>. Again, I had to reduce the cutoff frequency so that Marilyn would visible at a reasonable distance. Because the images are aligned and grayscale, we don't see much of a difference in Einstein's skin tone.</p>
+</div>
+
+
+<h3>Cat/Dog</h3><h4>(Base case)</h4>
+
+<table>
+
+<tr>
+<td>
+<img src="cat_dog/cat.bmp" width="24%"/>
+<img src="cat_dog/dog.bmp"  width="24%"/>
+<img src="cat_dog/high_frequencies.jpg" width="24%"/>
+<img src="cat_dog/low_frequencies.jpg" width="24%"/>
+</td>
+</tr>
+<tr>
+<td>
+<img src="cat_dog/hybrid_image_scales.jpg" width="99%"/>
+</td>
+</tr>
+
+</table>
+<div style="clear:both" >
+<p>The cutoff frequency used for this pair was - <b>7</b>. I tried changing the value of the cutoff frequency, however 7 seemed right. </p>
+</div>
+</body>
+</html>

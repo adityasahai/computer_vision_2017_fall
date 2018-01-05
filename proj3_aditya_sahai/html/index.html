@@ -1,0 +1,264 @@
+<html>
+<head>
+<title>Computer Vision Project</title>
+<link href='http://fonts.googleapis.com/css?family=Nunito:300|Crimson+Text|Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" title="Default" href="styles/github.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>  
+
+<link rel="stylesheet" href="highlighting/styles/default.css">
+<script src="highlighting/highlight.pack.js"></script>
+
+<style type="text/css">
+body {
+	margin: 0px;
+	width: 100%;
+	font-family: 'Crimson Text', serif;
+	font-size: 20px;
+	background: #fcfcfc;
+}
+h1 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 28px;
+	margin: 25px 0px 0px 0px;
+	text-transform: lowercase;
+
+}
+
+h2 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 32px;
+	margin: 15px 0px 35px 0px;
+	color: #333;	
+	word-spacing: 3px;
+}
+
+h3 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 26px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+h4 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 22px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+
+h5 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 18px;
+	margin: 10px 0px 10px 0px;
+	color: #111;
+	word-spacing: 2px;
+}
+
+p, li {
+	color: #444;
+}
+
+a {
+	color: #DE3737;
+}
+
+.container {
+	margin: 0px auto 0px auto;
+	width: 1160px;
+}
+
+#header {
+	background: #333;
+	width: 100%;
+}
+
+#headersub {
+	color: #ccc;
+	width: 960px;
+	margin: 0px auto 0px auto;
+	padding: 20px 0px 20px 0px;
+}
+
+.chart {
+	width: 480px;
+}
+.lol {
+	font-size: 16px;
+	color: #888;
+	font-style: italic;
+}
+.sep {
+	height: 1px;
+	width: 100%;
+	background: #999;
+	margin: 20px 0px 20px 0px;
+}
+.footer{
+	font-size: 16px;
+}
+.latex {
+	width: 100%;
+}
+
+.latex img {
+	display: block;
+	margin: 0px auto 0px auto;
+}
+
+pre {
+	font-family: 'Droid Sans Mono';
+	font-size: 14px;
+}
+
+table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+table td img {
+  text-align: center;
+  vertical-align: middle;
+}
+
+#contents a {
+}
+
+.image {
+	display: inline-block;	
+}
+</style>
+<script type="text/javascript">
+    hljs.initHighlightingOnLoad();
+</script>
+</head>
+<body>
+<div id="header" >
+<div id="headersub">
+<h1>Aditya Sahai</h1>
+</div>
+</div>
+<div class="container">
+
+<h2> Project 3 / Camera Calibration and Fundamental Matrix Estimation with RANSAC</h2>
+
+<div style="float: right; padding: 20px">
+<img style="width: 25%;" src="woodruff2.jpg" />
+<p style="font-size: 14px">Epipolar Lines</p>
+</div>
+
+<p> The idea of this project was to understand and implement camera caliberation and learn to implement algorithms to estimate the Fundamental Matrix using RANSAC</p>
+
+<p>The project had three parts.</p>
+
+<ul style="list-style: none;">
+<li><h2>Part 1</h2></li>
+<p>The first part involves calculating the camera projection matrix which maps world 3D coordinates to image 2D coordinates. I have setup the matrix which forms the system of equations as follows, and then used the SVD method to solve for the variables of the projection matrix with a residual value of 0.0534.</p>
+<img style="width: 50%;" src="equation.png"/>
+<p>Using the projection matrix we calculate camera center which comes out to (-1.5246, -2.3588, 0.2808).</p>
+<div class="image">
+<img style="width: 25%;" src="camera_position.jpg">
+<p style="font-size: 14px">Camera Position</p>
+</div>
+<div class="image">
+<img style="width: 25%;" src="point_corr.jpg">
+<p style="font-size: 14px">Point Correspondances</p>
+</div>
+
+<li><h2>Part 2</h2></li>
+<p>Part 2 of this project required us to calcuate the Fundamental Matrix using a few sample points from two images with known correspondances. The fundamental matrix maps 2D points in one image to 2D points in another image. Usually the fundamental matrix is first calculated using points for which corresponding points in the other image are known.</p>
+<ul>
+<li>The initial version of the fundamental matrix calculation was done using 8 points from the sample points matrices and forming the matrix corresponding to the system of equations being solved. Once the matrix was formed, then SVD method as before was used to find the 9 variables of the fundamental matrix. I also applied the singularity constraint as described in the lectures.</li>
+<li>The extra credit version of the same algorithm which showed significant improvement, employed <a href="https://en.wikipedia.org/wiki/Eight-point_algorithm#The_normalized_eight-point_algorithm">Hartley's Algorithm</a>. The algorithm used in the code was inspired from the research paper - <b>Revisiting Hartley's Normalized Eight-Point Algorithm</b> by <i>Wojciech Chojnacki, Michael J. Brooks, Anton van den Hengel, and Darren Gawley</i>.</li>
+</ul>
+<div class="image">
+	<img style="width: 50%;" src="epi1.jpg">
+</div>
+<div class="image">
+	<img style="width: 50%;" src="epi2.jpg">
+</div>
+<li><h2>Part 3</h2></li>
+<p>Part 3 of the project used Fundamental Matrix estimation using the RANSAC algorithm. The RANSAC algorithm as described on Wikipedia is as follows,</p>
+
+<pre><code>
+Given:
+    data = a set of observed data points
+    model = a model that can be fitted to data points
+    n = the minimum number of data values required to fit the model
+    k = the maximum number of iterations allowed in the algorithm
+    t = a threshold value for determining when a data point fits a model
+    d = the number of close data values required to assert that a model fits well to data
+
+Return:
+    bestfit = model parameters which best fit the data (or nul if no good model is found)
+
+iterations = 0
+bestfit = nul
+besterr = something really large
+while iterations < k {
+    maybeinliers = n randomly selected values from data
+    maybemodel = model parameters fitted to maybeinliers
+    alsoinliers = empty set
+    for every point in data not in maybeinliers {
+        if point fits maybemodel with an error smaller than t
+             add point to alsoinliers
+    }
+    if the number of elements in alsoinliers is > d {
+        % this implies that we may have found a good model
+        % now test how good it is
+        bettermodel = model parameters fitted to all points in maybeinliers and alsoinliers
+        thiserr = a measure of how well model fits these points
+        if thiserr < besterr {
+            bestfit = bettermodel
+            besterr = thiserr
+        }
+    }
+    increment iterations
+}
+return bestfit
+
+</code></pre>
+<p>We find point correspondes in two images using the SIFT functionality of the VFleat package and then randomaly pick these points to calculate the fundamental matrix, running iterations with new samples until a specified number of iterations which is usually high.</p>
+
+<p>I tried using different values for number of iterations of the RANSAC algorithm and different values of the acceptance threshold for each image, and always recieved different results. The results for the images in the project zip are as follows,</p>
+</ol>
+
+<h3>Results in a table</h3>
+
+<table border=1>
+<tr>
+<td>
+<img src="mr1.jpg" width="50%"/>
+<img src="mr2.jpg"  width="50%"/>
+</td>
+</tr>
+
+<tr>
+<td>
+<img src="woodruff1.jpg" width="50%"/>
+<img src="woodruff2.jpg"  width="50%"/>
+</td>
+</tr>
+<tr>
+<td>
+<img src="nortedame1.jpg" width="50%"/>
+<img src="nortedame2.jpg"  width="50%"/>
+</td>
+</tr>
+<tr>
+<td>
+<img src="eg1.jpg" width="50%"/>
+<img src="eg2.jpg"  width="50%"/>
+</td>
+</tr>
+
+
+</table>
+
+</body>
+</html>

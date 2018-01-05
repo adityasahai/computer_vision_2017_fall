@@ -1,0 +1,248 @@
+<html>
+<head>
+<title>Face Detection Project</title>
+<link href='http://fonts.googleapis.com/css?family=Nunito:300|Crimson+Text|Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" title="Default" href="styles/github.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>  
+
+<link rel="stylesheet" href="highlighting/styles/default.css">
+<script src="highlighting/highlight.pack.js"></script>
+
+<style type="text/css">
+body {
+	margin: 0px;
+	width: 100%;
+	font-family: 'Crimson Text', serif;
+	font-size: 20px;
+	background: #fcfcfc;
+}
+h1 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 28px;
+	margin: 25px 0px 0px 0px;
+	text-transform: lowercase;
+
+}
+
+h2 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 32px;
+	margin: 15px 0px 35px 0px;
+	color: #333;	
+	word-spacing: 3px;
+}
+
+h3 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 26px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+h4 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 22px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+
+h5 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 18px;
+	margin: 10px 0px 10px 0px;
+	color: #111;
+	word-spacing: 2px;
+}
+
+p, li {
+	color: #444;
+}
+
+a {
+	color: #DE3737;
+}
+
+.container {
+	margin: 0px auto 0px auto;
+	width: 1160px;
+}
+
+#header {
+	background: #333;
+	width: 100%;
+}
+
+#headersub {
+	color: #ccc;
+	width: 960px;
+	margin: 0px auto 0px auto;
+	padding: 20px 0px 20px 0px;
+}
+
+.chart {
+	width: 480px;
+}
+.lol {
+	font-size: 16px;
+	color: #888;
+	font-style: italic;
+}
+.sep {
+	height: 1px;
+	width: 100%;
+	background: #999;
+	margin: 20px 0px 20px 0px;
+}
+.footer{
+	font-size: 16px;
+}
+.latex {
+	width: 100%;
+}
+
+.latex img {
+	display: block;
+	margin: 0px auto 0px auto;
+}
+
+pre {
+	font-family: 'Droid Sans Mono';
+	font-size: 14px;
+}
+
+table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+table td img {
+  text-align: center;
+  vertical-align: middle;
+}
+
+#contents a {
+}
+</style>
+<script type="text/javascript">
+    hljs.initHighlightingOnLoad();
+</script>
+</head>
+<body>
+<div id="header" >
+<div id="headersub">
+<h1>Aditya Sahai </h1>
+</div>
+</div>
+<div class="container">
+
+<h2> Project 5 / Face Detection with a Sliding Window</h2>
+
+<div style="float: none; padding: 20px">
+<img src="extraImage.jpg" style="width: 60%;"/>
+<p style="font-size: 14px"><b>Fig:</b>Detections on the extra image</p>
+</div>
+
+
+<div style="float: none; padding: 20px">
+<img src="picard.jpg" style="width: 40%;"/>
+<p style="font-size: 14px"><b>Fig:</b>Picard being detected</p>
+</div>
+
+<p> Project 5 requires us to implement a face detector. The detector is based on the concept be the sliding window and the image features are calculated using HOG features as illustrated in the paper by <a href="https://www.cc.gatech.edu/~hays/compvision/proj5/papers/dalal_triggs_cvpr_2005.pdf">Dalal and Triggs 2005.</a> The baseline model required us to implement a positive feature extractor from a provided face database consisting of 6713 cropped face images. Subsequently we had to use a database of non-face images to extract features from non-face images. We then had to use these features, both positive and negative to train an SVM to identify face images. Then we had to use the SVM and the concept of sliding window at different scales to identify face images in different test images which had ground truth to compare against.</p>
+
+<ul>
+<li><h3>Getting positive features</h3></li>
+<p>Extracting positive features was easy. As mentioned earlier, we had 6713 face images from the Caltech database of 36x36 dimensions. The hog extractor function, vl_hog from the VLFeat library requires a HOG cell size along with the image. In this project, we noticed that smaller cell sizes give better accuracy but at the cost of time. I used the HOG cell size of 6 for debugging and later used 3 or 4 to get better performance.</p>
+<li><h3>Getting negative features</h3></li>
+<p>We were given some 275 images to extract negative features. To train a resonalble SVM with a good number of negative examples, we needed at least 20000 samples. I decided to extract HOG features from these images at different scales. I reckoned, that the slowest step of this feature extraction process is to calculate the HOG features for each image. Insteat of selecting a random image and selecting a random scale and then calculating the HOG features for the scale image, I decided to select a predetermined selection of scales and calculate the number of samples I needed to collect per image per scale(num_pips). Then I would scale each image to all these scales, calculate HOG features and collect number calculated earlier (num_pips). This saves time overall as we collect more samples for each HOG feature calculation.
+	The submitted code has two implementations of this code. 1, which calcuates HOG for each image at each scale, possibly multiple times and the second one which uses the the below mentioned pseudo code. We see significant improvement in running times.
+The first version of this code ran in <b>9</b> minutes while the newly updated version ran in <b>~ 54</b> seconds on my system.</p>
+<pre><code>
+num_pips = ceil(num_samples/(num_images * num_scales))
+for i = 1:num_images
+	if samples_collected >= num_samples
+		break;
+	for j = scales % predetermined scales
+		img = images(i)
+		scale_image = imresize(img, j)
+		hog = vl_hog(scale_image, cell_size)
+		rows = size(hog, 1)
+		cols = size(hog, 2)
+		for k = 1:num_pips
+			n = randi([1, rows - window])
+			m = randi([1, cols - window])
+			features_neg(samples_collected, :) = reshape(hog(n:n+window-1, m:m+window-1, :), [feature_size, 1])
+			samples_collected++
+</code></pre>
+<li><h3>Training the SVM</h3></li>
+<p>We use the vl_svmtrain function from the VLFeat library to train an SVM with positive and negative examples extracted so far. Different lambda values were tried and I settled on lambda = 0.00001. A sanity check is ran to check the trained SVM against the training images we had provided to check if did everything right. The green line is the positive examples and the red line is the negative examples. The Y axis the SVM's evaluation of each example.</p>
+<img src="svm_output.jpg" style="width: 45%;">
+<li><h3>(Extra Credit) Hard Negative Mining</h3></li>
+<p>As explained in the orignial paper by Dalal and Triggs, we mine for hard negatives by running the evaluated SVM against the negative training set. Images evaluated to be above a certain threshold are retained and augmented (hard examples) to the original training set as negative examples to retrain the SVM with the same lambda. Although, this doee not give a huge performance boost to the final AP, it is an interesting experiment. The function written for hard negative mining takes in the non-face image directory, the calculated normal vector <code>w</code> and the bias <code>b</code>, the structure <code>feature_params</code>, the size of the feature vector space to ease with calculations, the max number of hard negatives to return and the threshold above which to consider features to be hard negatives. Each image in the non-face datbase is evaluated against the SVM at different scales by extracting HOG features at different scales and calculating the confidence,</p>
+<pre><code>
+	hog = vl_hog(image, cell_size)
+	features = hog(:)
+	confidence = w*features' + b
+	if confidence > threshold
+		hard_negatives = hard_negatives + features;
+</code></pre>
+<li><h3>Detector</h3></li>
+<p>Coding the detector was the most complex part of this project. The detector had to use a sliding window to detec faces. The pseudo code for the algorithm is as follows,</p>
+<pre><CODE>
+	for each in test_image
+		for s = 1.2:-0.04:0.1
+			image = imresize(image, s)
+			hog = vl_hog(image, cell_size)
+			rows = size(hog, 1) - window
+			cols = size(hog, 2) - window
+			for k = 1:rows
+				for j = 1:cols
+					feature_set = hog(k:k+window - 1, j:j+window - 1, :)
+					confidence = feature_set(:) * w' + b
+					if (confidence > threshold)
+						coordinates = calculate_coordinates(k, j, cell_size)
+						bboxes = [bboxes; coordinates]
+
+			apply_non_maximal_supression(bboxes)
+</CODE></pre>
+<p>The most important param in this is the threshold value which is set to <b>0.0</b> for all detections.</p>
+<li><h2>Results</h2></li>
+The submitted code has the following settings
+<ol>
+	<li>lambda = 0.00001</li>
+	<li>threshold for negative mining = 0.1</li>
+	<li>threshold for run_detector.m = 0.0</li>
+<p>Face Template HOG visualization at cell size 3</p>
+<img src="faceHOG3.jpg">
+<p>
+Precision Recall curve at HOG cell size 3 and threshold 0.01 and no hard negative mining. This pipelines takes around 22 mins to run on my system.
+<p>
+<img src="ap3_no_hard_negative.jpg">
+<p>
+<p>
+Precision Recall curve at HOG cell size 3 and threshold 0.01 and hard negative mining limited to 1000 features. Interestingly enough, the precision suffers.
+<p>
+<img src="ap3_hard_negative.jpg">
+<p>
+<p>
+Precision Recall curve at HOG cell size 6 and threshold 0.00 and no hard negative mining. This pipeline is much faster and takes around 4 minutes on my system. This is the setting of the submitted code.
+<p>
+<img src="ap6_no_hard_negative.jpg">
+<p>
+Detections for the Argentina team.
+<img src="detections_Argentina.jpg.png">
+<p>
+Viola Jones
+<img src="violajones.jpg">
+
+
+</ul>
+</center>
+</body>
+</html>

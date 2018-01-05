@@ -1,0 +1,208 @@
+<html>
+<head>
+<title>Computer Vision Project</title>
+<link href='http://fonts.googleapis.com/css?family=Nunito:300|Crimson+Text|Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" title="Default" href="styles/github.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>  
+
+<link rel="stylesheet" href="highlighting/styles/default.css">
+<script src="highlighting/highlight.pack.js"></script>
+
+<style type="text/css">
+body {
+	margin: 0px;
+	width: 100%;
+	font-family: 'Crimson Text', serif;
+	font-size: 20px;
+	background: #fcfcfc;
+}
+h1 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 28px;
+	margin: 25px 0px 0px 0px;
+	text-transform: lowercase;
+
+}
+
+h2 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 32px;
+	margin: 15px 0px 35px 0px;
+	color: #333;	
+	word-spacing: 3px;
+}
+
+h3 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 26px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+h4 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 22px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+
+h5 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 18px;
+	margin: 10px 0px 10px 0px;
+	color: #111;
+	word-spacing: 2px;
+}
+
+p, li {
+	color: #444;
+}
+
+a {
+	color: #DE3737;
+}
+
+.container {
+	margin: 0px auto 0px auto;
+	width: 960px;
+}
+
+#header {
+	background: #333;
+	width: 100%;
+}
+
+#headersub {
+	color: #ccc;
+	width: 960px;
+	margin: 0px auto 0px auto;
+	padding: 20px 0px 20px 0px;
+}
+
+.chart {
+	width: 480px;
+}
+.lol {
+	font-size: 16px;
+	color: #888;
+	font-style: italic;
+}
+.sep {
+	height: 1px;
+	width: 100%;
+	background: #999;
+	margin: 20px 0px 20px 0px;
+}
+.footer{
+	font-size: 16px;
+}
+.latex {
+	width: 100%;
+}
+
+.latex img {
+	display: block;
+	margin: 0px auto 0px auto;
+}
+
+pre {
+	font-family: 'Droid Sans Mono';
+	font-size: 14px;
+}
+
+td img {
+  vertical-align: middle;
+}
+
+#contents a {
+}
+</style>
+<script type="text/javascript">
+    hljs.initHighlightingOnLoad();
+</script>
+</head>
+<body>
+<div id="header" >
+<div id="headersub">
+<h1><span style="color: #DE3737">Aditya Sahai</span></h1>
+</div>
+</div>
+<div class="container">
+
+<h2>Project 2: Local Feature Matching</h2>
+
+<div style="float: right; padding: 20px">
+<img src="eval_mount_rushmore.jpg" width="70%"/>
+<p style="font-size: 14px">Evaluation image for Mount Rushmore</p>
+</div>
+
+<p> Project 2 is the implementation of the SIFT feature building as well as interest point detection. We were given three sets of images with ground truth for testing. Here is how I implemented the algorithm.</p>
+
+<ol>
+<li>Interest point collection</li>
+<p>For interst points I first tried the basic harris point detector, which worked fine (I am not sure what accuracy I would have gotten with the harris corner detector because I updated a major bug in my feature building algorithm later). However, I later tried the following algorithm,</p>
+<ul>
+	<li>I build a image pyramid of 3 images at 5 difference blur levels, starting with the original image and then rescaling it down twice. The Sigma for the gaussian filter used was 0.5. I found that for higher sigma, I got very few keypoints which led to spurious matches.</li>
+	<li>Now that I have 15 images, I took difference of gaussian images at each row of the same sized images and ended up with 12 images.</li>
+	<li>Now to calculate keypoints, I set a high threshold and a low threshold, and created a keypoint matrix same as the size of the image of zeros. For each pixel in the difference of gaussian images which are the size of the input image (the variable 'image' in the function), I found extremas (maximum and minimum) within its 17* neighbours (8 on the same level and 9 on a lower scale). I did this for all the four difference of gaussian images which were the size of the 'image' variable. At the end of the loop I took an & of the four keypoint matrices, only retaining points which were extremas in all four cases.
+		<p><b>*</b><i>Orignially I compared the point with all 26 neighbours as prescribed but found that the higher scale image had very high values and a lot of points were being eliminated. I am not sure why this was happening. If you check the code, this part is commented out.</i></p></li>
+	<li> For each of these keypoints, I calculated their dominant orientations and saved them into the orientations variable. The orientations were built by taking a feature_width size of area around the keypoint and placing gradient magnitudes in a histogram with 36 bins (10 degrees each) and the bin with the maximum value was chosen to be the dominant orientation. This implementation of the orientation was inspired by the following paper,
+	<b><i>Multicore computing for SIFT algorithm in Matlab parallel environment by Cao and Chen</i></b> (just to be clear, the algorithm was inspired from written text and no code from the paper was used).</li>
+</ul>
+<br/>
+<li>Building feature descriptors</li>
+<p>As per my understanding, feature descriptors are like fingerprints for each keypoint. They can take any possible detail about the keypoints and encode it in such a way that they can be compared later without that of another keypoint. For building feature descriptors, I tried the following algorithm,</p>
+<ul>
+	<li>I first calculated the gradient of the image in the x direction and gradient of the image in the y direction using imgradientxy(). I also calculated the magnitude of the image using imgradient(). I calculated a theta matrix using inverse tan function atan2() for the image.</li>
+	<li>I used the image orientations to rotate the image and transform the keypoint coordinates for the original image to the key points at the same position in the rotated image. Around this new keypoint in the rotated image, I extracted the 16x16 feature box. The inspiration for the keypoint transformation from the original image to the rotated image was taken from <a href="https://stackoverflow.com/questions/33127640/how-to-find-a-point-on-image-after-rotation">this post</a> (in this case, code was actually used).</li>
+	<li>Corresponding 16x16 boxes were chosen from the gradient and theta matrices.</li>
+	<li>Using these, a 128 vector feature was calculated (8 bins histogram was used) which would render the feature of the keypoint unique.</li>
+</ul>
+<br/>
+<li>Feature Matching</li>
+<p> Now that we have collected features for both images, it is time to compare them. I used euclidean distance and the nearest neighbour algorithm described in the textbook (equation 4.18) to calculate corresponding keypoints using brute force 2 loop system. Since, the number of keypoints collected were high, the matching algorithm with complexity O(n^2), took quite a while as displayed below.</p>
+</ol>
+
+<div style="clear:both">
+<h3>Results: Mount Rushmore</h3>
+<p>Accuracy on top 100 most confident matches- 81%</p>
+<p>Time to run ~ 511 sec</p>
+<p>Surprisingly, I got higher accuracy with the Mount Rushmore image than with the Norte Dame image. I discovered this at the end when I wanted to check if my code worked with the Mount Rushmore image or not. However, all this efficiency comes at the cost of the running time.</p>
+<table border=1>
+<tr><td>
+<img src="vis_dots_mount_rushmore.jpg" width="80%"/>
+</td></tr>
+<tr><td>
+<img src="vis_arrows_mount_rushmore.jpg"  width="80%"/>
+</td></tr>
+<tr><td>
+<img src="eval_mount_rushmore.jpg" width="80%"/>
+</td></tr>
+</table>
+<h3>Results: Norte Dame</h3>
+<p>Accuracy on top 100 most confident matches- 75%</p>
+<p>Time to run ~ 291 sec</p>
+<table border=1>
+<tr><td>
+<img src="vis_dots_nd.jpg" width="80%"/>
+</td></tr>
+<tr><td>
+<img src="vis_arrows_nd.jpg"  width="80%"/>
+</td></tr>
+<tr><td>
+<img src="eval_nd.jpg" width="80%"/>
+</td></tr>
+</table>
+
+
+<div style="clear:both" >
+<p>The high running times are because of the brute force matching algorithm and the fact that the number of keypoints collected were usually high. Also, I got zero matches right with the Episcopal Gaudi image set.</p>
+</div>
+</body>
+</html>

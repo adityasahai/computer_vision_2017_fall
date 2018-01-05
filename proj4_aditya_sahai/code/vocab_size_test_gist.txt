@@ -1,0 +1,66 @@
+Getting paths and labels for all train and test data
+Using bag of sift representation for images
+Using Vocab Size - 1
+Elapsed time is 40.175583 seconds.
+Elapsed time is 39.366446 seconds.
+Calculating gist featuresCalculating gist featuresUsing support vector machine classifier to predict test set categories
+Creating results_webpage/index.html, thumbnails, and confusion matrix
+Accuracy (mean of diagonal of confusion matrix) is 0.681
+Using Vocab Size - 10
+Elapsed time is 44.576026 seconds.
+Elapsed time is 43.552600 seconds.
+Calculating gist featuresCalculating gist featuresUsing support vector machine classifier to predict test set categories
+Creating results_webpage/index.html, thumbnails, and confusion matrix
+Accuracy (mean of diagonal of confusion matrix) is 0.702
+Using Vocab Size - 100
+Elapsed time is 107.095097 seconds.
+Elapsed time is 99.294888 seconds.
+Calculating gist featuresCalculating gist featuresUsing support vector machine classifier to predict test set categories
+Creating results_webpage/index.html, thumbnails, and confusion matrix
+Accuracy (mean of diagonal of confusion matrix) is 0.750
+Using Vocab Size - 200
+Elapsed time is 174.417460 seconds.
+Elapsed time is 176.209217 seconds.
+Calculating gist featuresCalculating gist featuresUsing support vector machine classifier to predict test set categories
+Creating results_webpage/index.html, thumbnails, and confusion matrix
+Accuracy (mean of diagonal of confusion matrix) is 0.765
+Using Vocab Size - 400
+Elapsed time is 347.107555 seconds.
+Elapsed time is 350.380702 seconds.
+Calculating gist featuresCalculating gist featuresUsing support vector machine classifier to predict test set categories
+Creating results_webpage/index.html, thumbnails, and confusion matrix
+Accuracy (mean of diagonal of confusion matrix) is 0.781
+Using Vocab Size - 500
+Elapsed time is 430.414862 seconds.
+Elapsed time is 426.166416 seconds.
+Calculating gist featuresCalculating gist featuresUsing support vector machine classifier to predict test set categories
+Creating results_webpage/index.html, thumbnails, and confusion matrix
+Accuracy (mean of diagonal of confusion matrix) is 0.792
+Using Vocab Size - 1000
+Elapsed time is 912.286101 seconds.
+Elapsed time is 924.886784 seconds.
+Calculating gist featuresCalculating gist featuresUsing support vector machine classifier to predict test set categories
+Creating results_webpage/index.html, thumbnails, and confusion matrix
+Accuracy (mean of diagonal of confusion matrix) is 0.805
+Using Vocab Size - 2000
+Elapsed time is 1939.410663 seconds.
+Elapsed time is 1985.908474 seconds.
+Calculating gist features
+Using support vector machine classifier to predict test set categories
+Creating results_webpage/index.html, thumbnails, and confusion matrix
+Accuracy (mean of diagonal of confusion matrix) is 0.797
+Using Vocab Size - 5000
+Elapsed time is 5124.701032 seconds.
+Elapsed time is 5172.120762 seconds.
+Calculating gist features
+Calculating gist featuresUsing support vector machine classifier to predict test set categories
+Creating results_webpage/index.html, thumbnails, and confusion matrix
+Accuracy (mean of diagonal of confusion matrix) is 0.794
+Getting paths and labels for all train and test data
+Using bag of sift representation for images
+Using Vocab Size - 10000
+Elapsed time is 11049.670017 seconds.
+Elapsed time is 11328.215912 seconds.
+Calculating gist featuresCalculating gist featuresUsing support vector machine classifier to predict test set categories
+Creating results_webpage/index.html, thumbnails, and confusion matrix
+Accuracy (mean of diagonal of confusion matrix) is 0.794
